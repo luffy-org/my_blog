@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
 
+from userprofile.models import Profile
+
 
 class UserLoginForm(forms.Form):
     username = forms.CharField()
@@ -21,3 +23,14 @@ class UserRegisterForm(forms.ModelForm):
             return data.get('password')
         else:
             raise forms.ValidationError("密码输入不一致,请重试。")
+
+
+class ProfileModelForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['phone', 'avatar', 'bio']
+        widgets = {
+            'phone': forms.widgets.TextInput(attrs={'class': 'form-control'}),
+            'bio': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 12}),
+            'avatar': forms.widgets.FileInput(attrs={'class': 'form-control-file'})
+        }

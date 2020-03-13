@@ -3,10 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from userprofile.forms import UserLoginForm, UserRegisterForm
+from userprofile.forms import UserLoginForm, UserRegisterForm, ProfileModelForm
 
 
 # Create your views here.
+from userprofile.models import Profile
 
 
 def user_login(request):
@@ -71,3 +72,25 @@ def user_delete(request, id):
             return HttpResponse("你没有删除操作的权限。")
     else:
         return HttpResponse("仅接受post请求。")
+
+
+@login_required(login_url='/userprofile/login/')
+def profile_edit(request):
+    """
+    编辑用户信息
+    :param request:
+    :return:
+    """
+    user = User.objects.get(id=request.user.id)
+    profile_obj = Profile.objects.get(user_id=request.user.id)
+    if request.method == 'POST':
+        profile_form = ProfileModelForm(data=request.POST, instance=profile_obj,files=request.FILES)
+        if profile_form.is_valid():
+            profile_form.save()
+            return redirect('article:list')
+
+    else:
+        profile_form = ProfileModelForm(instance=profile_obj)
+        context = {'profile_form': profile_form, 'profile': profile_obj, 'user': user }
+        return render(request, 'userprofile/edit.html', context)
+

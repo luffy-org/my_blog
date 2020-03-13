@@ -7,8 +7,13 @@ from article.forms import ArticlePostForm
 from article.models import ArticlePost
 import markdown
 
+from utils.page import Pagination
+
 
 def article_list(request):
+    art_count = ArticlePost.objects.all().count()
+    base_url = request.path_info
+    print(base_url)
 
     art_list = ArticlePost.objects.all()
     for item in art_list:
@@ -18,7 +23,7 @@ def article_list(request):
         # 语法高亮扩展
         'markdown.extensions.codehilite',
     ])
-    context = {'article_list': art_list}
+    context = {'article_list': art_list, }
 
     return render(request, 'article/article_list.html', context)
 
@@ -42,7 +47,7 @@ def article_create(request):
         article_form = ArticlePostForm(data=request.POST)
         if article_form.is_valid():
             new_article_obj = article_form.save(commit=False)
-            new_article_obj.author = User.objects.get(pk=1)  # 给博客安排一个作者
+            new_article_obj.author = User.objects.get(pk=request.user.id)  # 给博客安排一个作者
             new_article_obj.save()
             return redirect('article:list')
         else:
