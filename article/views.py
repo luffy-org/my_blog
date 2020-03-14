@@ -12,6 +12,8 @@ from article.forms import ArticlePostForm
 from article.models import ArticlePost
 import markdown
 
+from comment.models import Comment
+
 
 def article_list(request):
     search = request.GET.get('search')
@@ -62,11 +64,12 @@ def article_detail(request, pid):
     ])
     article.body = md.convert(article.body)
     author = article.author
+    comments = Comment.objects.filter(article_id=pid)
     if request.user != author:
         article.total_views += 1
         article.save(update_fields=['total_views'])
     # 需要传递给模板的对象
-    context = {'article': article, 'toc': md.toc}
+    context = {'article': article, 'toc': md.toc, 'comments': comments}
     # 载入模板，并返回context对象
     return render(request, 'article/detail.html', context)
 

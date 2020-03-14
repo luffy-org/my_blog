@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'article.apps.ArticleConfig',
     'userprofile.apps.UserprofileConfig',
-    'password_reset'
+    'password_reset',
+    'comment.apps.CommentConfig'
 ]
 
 MIDDLEWARE = [
