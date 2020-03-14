@@ -15,15 +15,19 @@
                 <!-- 文章标题 -->
                 <div class="form-group">
                     <!-- 标签 -->
-                    <label for="title">文章标题</label>
-                    <!-- 文本框 -->
-                    <input type="text" class="form-control" id="title" name="title">
+{#                    <label for="title">文章标题</label>#}
+{#                    <!-- 文本框 -->#}
+{#                    <input type="text" class="form-control" id="title" name="title">#}
+                    <label for="{{ article_form.title.id_for_label }}">{{ article_form.title.label }}</label>
+                    {{ article_form.title }}
                 </div>
                 <!-- 文章正文 -->
                 <div class="form-group">
-                    <label for="body">文章正文</label>
-                    <!-- 文本区域 -->
-                    <textarea type="text" class="form-control" id="body" name="body" rows="12"></textarea>
+{#                    <label for="body">文章正文</label>#}
+{#                    <!-- 文本区域 -->#}
+{#                    <textarea type="text" class="form-control" id="body" name="body" rows="12"></textarea>#}
+                    <label for="{{ article_form.body.id_for_label }}">{{ article_form.body.label }}</label>
+                    {{ article_form.body }}
                 </div>
                 <!-- 提交按钮 -->
                 <button type="submit" class="btn btn-primary">完成</button>

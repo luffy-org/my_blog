@@ -17,6 +17,8 @@ class ArticlePost(models.Model):
 
     updated = models.DateTimeField(auto_now=True, verbose_name='博客更新时间')
 
+    total_views = models.PositiveIntegerField(default=0)
+
     class Meta:
         ordering = ('-created',)
         verbose_name = '01-博客表'

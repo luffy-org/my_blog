@@ -1,46 +1,75 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 # Create your views here.
+from django.urls import reverse
+
 from article.forms import ArticlePostForm
 from article.models import ArticlePost
 import markdown
 
-from utils.page import Pagination
-
 
 def article_list(request):
-    art_count = ArticlePost.objects.all().count()
-    base_url = request.path_info
-    print(base_url)
+    search = request.GET.get('search')
+    order = request.GET.get('order')
+    if search:
+        if order == 'total_views':
+            art_all = ArticlePost.objects.filter(Q(title__contains=search) | Q(body__contains=search)).order_by(-order)
+        else:  # 只显示搜索内容
 
-    art_list = ArticlePost.objects.all()
-    for item in art_list:
+            art_all = ArticlePost.objects.filter(Q(title__contains=search) | Q(body__contains=search))
+
+    else:
+        search = ''
+        if order == 'total_views':
+            art_all = ArticlePost.objects.all().order_by('-total_views')
+        else:
+            art_all = ArticlePost.objects.all()
+            order = 'normal'
+    # 导入Django的分页器，一页显示一条数据
+    paginator = Paginator(art_all, 2)
+
+    # 拿到URL中的page参数
+    page = request.GET.get('page')
+    art_list = paginator.get_page(page)
+
+    for item in art_all:
         item.body = markdown.markdown(item.body, extensions=[
-        # 包含 缩写、表格等常用扩展
-        'markdown.extensions.extra',
-        # 语法高亮扩展
-        'markdown.extensions.codehilite',
-    ])
-    context = {'article_list': art_list, }
+            # 包含 缩写、表格等常用扩展
+            'markdown.extensions.extra',
+            # 语法高亮扩展
+            'markdown.extensions.codehilite',
+        ])
+    context = {'articles': art_list, 'order': order, 'search': search}
 
     return render(request, 'article/article_list.html', context)
 
 
 def article_detail(request, pid):
-
     article = ArticlePost.objects.get(id=pid)
-    article.body = markdown.markdown(article.body, extensions=[
+    md = markdown.Markdown(extensions=[
         # 包含 缩写、表格等常用扩展
         'markdown.extensions.extra',
         # 语法高亮扩展
         'markdown.extensions.codehilite',
+
+        # 目录的扩展
+        'markdown.extensions.toc'
     ])
+    article.body = md.convert(article.body)
+    author = article.author
+    if request.user != author:
+        article.total_views += 1
+        article.save(update_fields=['total_views'])
     # 需要传递给模板的对象
-    context = {'article': article}
+    context = {'article': article, 'toc': md.toc}
     # 载入模板，并返回context对象
     return render(request, 'article/detail.html', context)
+
 
 def article_create(request):
     if request.method == 'POST':
@@ -56,6 +85,24 @@ def article_create(request):
         article_form = ArticlePostForm()
         context = {'article_form': article_form}
         return render(request, 'article/create.html', context)
+
+@login_required(login_url='/article/list')
+def article_edit(request, pid):
+    article_obj = ArticlePost.objects.filter(id=pid).first()
+    if request.method == 'GET':
+        article_form = ArticlePostForm(instance=article_obj)
+        context = {'article_form': article_form}
+        return render(request, 'article/create.html', context)
+    article_form = ArticlePostForm(data=request.POST, instance=article_obj)
+    if article_form.is_valid():
+        new_article_obj = article_form.save(commit=False)
+        new_article_obj.author = User.objects.get(pk=request.user.id)
+        new_article_obj.save()
+        # return redirect(reverse('article:article_edit', kwargs={'pid': pid}))
+        return redirect('article:article_detail', pid=pid)
+    else:
+        return HttpResponse('编辑错误')
+
 
 
 def article_delete(request, pid):

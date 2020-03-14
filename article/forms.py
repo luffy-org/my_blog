@@ -8,8 +8,8 @@ class ArticlePostForm(forms.ModelForm):
     class Meta:
         model = ArticlePost
         fields = {'title', 'body'}
-        # widgets = {
-        #     'title': TextInput(attrs={'class': 'form-control'}),
-        #     'body': forms.Textarea(attrs={'class': 'form-control'})
-        # }
+        widgets = {
+            'title': TextInput(attrs={'class': 'form-control'}),
+            'body': forms.Textarea(attrs={'class': 'form-control', 'rows': 12})
+        }
 

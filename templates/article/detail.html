@@ -13,14 +13,31 @@
     <div class="container">
         <div class="row">
             <!-- 标题及作者 -->
-            <h1 class="col-12 mt-4 mb-4">{{ article.title }}</h1>
-            <div class="col-12 alert alert-success">作者：{{ article.author }}
-                <a href="#" onclick="confirm_delte()">删除文章</a>
-            </div>
-            <!-- 文章正文 -->
+            <div class="col-9">
+                <h1 class="col-12 mt-4 mb-4">{{ article.title }}</h1>
+                <div class="col-12 alert alert-success">作者：{{ article.author }}
+                    {% if user == article.author %}
+                        <a href="#" onclick="confirm_delte()">删除文章</a>
+                        <a href=" {% url 'article:article_edit' pid=article.id %}">编辑文章</a>
+                    {% endif %}
+                    <div>
+                        浏览：{{ article.total_views }}
+                    </div>
 
-            <div class="col-12">
-                <p>{{ article.body|safe }}</p>
+                </div>
+
+                <!-- 文章正文 -->
+
+                <div class="col-12">
+                    <p>{{ article.body|safe }}</p>
+                </div>
+            </div>
+            <div class="col-3 mt-4">
+                <h4><strong>目录</strong></h4>
+                <hr>
+                <div>
+                    {{ toc|safe }}
+                </div>
             </div>
         </div>
     </div>
@@ -31,10 +48,10 @@
                 content: "确认删除这篇文章吗？",
                 yes: function (index, layero) {
                     location.href = '{% url "article:article_delete" article.id %}'
-                    
+
                 }
             })
-            
+
         }
     </script>
 
