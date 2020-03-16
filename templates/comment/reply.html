@@ -1,0 +1,46 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+</head>
+<body>
+<form method="post" id="reply_form">
+    {% csrf_token %}
+    <div class="form-group">
+        <div id="test">
+            {{ comment_form.media }}
+            {{ comment_form.body }}
+        </div>
+    </div>
+</form>
+<button onclick="confirm_sumbit({{ article_id }}, {{ parent_comment_id }})" class="btn btn-primary">发送</button>
+<script src="{% static 'jquery/jquery-3.3.1.js' %}"></script>
+<script src="{% static 'popper/popper-1.14.4.js' %}"></script>
+<script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'csrf.js' %}"></script>
+<script>
+    $(function () {
+        $('.django-ckeditor-widget').removeAttr('style');
+    });
+    function confirm_sumbit(article_id, comment_id) {
+        console.log('走了吗');
+        let content = CKEDITOR.instances['id_body'].getData();
+        {#console.log(content);#}
+        $.ajax({
+            url: '/comment/commit/'+ article_id + '/' + comment_id + '/',
+            type: 'POST',
+            data: {body: content},
+            success: function (e) {
+                if (e === '200 OK'){
+                    //刷新页面
+                    parent.location.reload();
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>

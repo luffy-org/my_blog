@@ -79,7 +79,6 @@ def article_create(request):
     :return:
     """
     if request.method == 'POST':
-        print('在视图函数里查看上传文件', request.FILES)
         article_form = ArticlePostForm(data=request.POST, files=request.FILES)
         if article_form.is_valid():
             new_article_obj = article_form.save(commit=False)
@@ -103,7 +102,6 @@ def article_edit(request, pid):
         context = {'article_form': article_form}
         return render(request, 'article/create.html', context)
     article_form = ArticlePostForm(data=request.POST, instance=article_obj, files=request.FILES)
-    print('在修改博客的视图函数里查看上传文件', request.FILES)
     if article_form.is_valid():
         new_article_obj = article_form.save(commit=False)
         new_article_obj.author = User.objects.get(pk=request.user.id)

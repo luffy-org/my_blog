@@ -8,6 +8,7 @@ from comment import views
 app_name = 'comment'
 
 urlpatterns = [
-    path('commit/<int:article_id>/', views.commit_comment, name='commit_comment')
+    path('commit/<int:article_id>/', views.commit_comment, name='commit_comment'),
+    path('commit/<int:article_id>/<int:parent_comment_id>/', views.commit_comment, name='comment_reply')
 
 ]

@@ -35,10 +35,10 @@ class ArticlePost(models.Model):
         :param kwargs:
         :return:
         """
-        article = super().save(*args, **kwargs)
-        print('查看上传图片',self.avatar)
-        if self.avatar and not kwargs.get('update_fields'):  # update_fields 是在访问博客的时候对访客数量进行更行操作，排除这种操作
 
+        article = super().save(*args, **kwargs)
+        if self.avatar and not kwargs.get('update_fields'):  # update_fields 是在访问博客的时候对访客数量进行更行操作，排除这种操作
+            print('get请求怎么会走save方法')
             image = Image.open(self.avatar)
             (x, y) = image.size
             new_x = 400

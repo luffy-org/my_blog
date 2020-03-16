@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'password_reset',
     'taggit',
     'comment.apps.CommentConfig',
-    'ckeditor'
+    'ckeditor',
+    'mptt'
 
 ]
 
@@ -142,6 +143,8 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
+
+# 富文本编辑器的设置
 CKEDITOR_CONFIGS = {
     # django-ckeditor默认使用default配置
     'default': {
