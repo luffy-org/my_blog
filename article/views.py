@@ -9,7 +9,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from article.forms import ArticlePostForm
-from article.models import ArticlePost
+from article.models import ArticlePost, ArticleColumn
 import markdown
 
 from comment.models import Comment
@@ -18,22 +18,18 @@ from comment.models import Comment
 def article_list(request):
     search = request.GET.get('search')
     order = request.GET.get('order')
+    column = request.GET.get('column')
+    art_all = ArticlePost.objects.all()
     if search:
-        if order == 'total_views':
-            art_all = ArticlePost.objects.filter(Q(title__contains=search) | Q(body__contains=search)).order_by(-order)
-        else:  # 只显示搜索内容
-
-            art_all = ArticlePost.objects.filter(Q(title__contains=search) | Q(body__contains=search))
-
+        art_all = art_all.filter(Q(title__contains=search) | Q(body__contains=search))
     else:
         search = ''
-        if order == 'total_views':
-            art_all = ArticlePost.objects.all().order_by('-total_views')
-        else:
-            art_all = ArticlePost.objects.all()
-            order = 'normal'
-    # 导入Django的分页器，一页显示一条数据
-    paginator = Paginator(art_all, 2)
+    if order == 'total_views':
+        art_all = art_all.order_by('-total_views')
+    if column is not None and column.isdigit():
+        art_all = art_all.filter(column=column)
+
+    paginator = Paginator(art_all, 3)
 
     # 拿到URL中的page参数
     page = request.GET.get('page')
@@ -75,18 +71,26 @@ def article_detail(request, pid):
 
 
 def article_create(request):
+    """
+    创建博客
+    :param request:
+    :return:
+    """
     if request.method == 'POST':
-        article_form = ArticlePostForm(data=request.POST)
+        print('在视图函数里查看上传文件', request.FILES)
+        article_form = ArticlePostForm(data=request.POST, files=request.FILES)
         if article_form.is_valid():
             new_article_obj = article_form.save(commit=False)
             new_article_obj.author = User.objects.get(pk=request.user.id)  # 给博客安排一个作者
             new_article_obj.save()
+            article_form.save_m2m()
             return redirect('article:list')
         else:
             return HttpResponse('提交错误')
     else:
+        column = ArticleColumn.objects.all()  # 获取栏目数据，用于前端页面展示
         article_form = ArticlePostForm()
-        context = {'article_form': article_form}
+        context = {'article_form': article_form, 'columns': column}
         return render(request, 'article/create.html', context)
 
 @login_required(login_url='/article/list')
@@ -96,11 +100,13 @@ def article_edit(request, pid):
         article_form = ArticlePostForm(instance=article_obj)
         context = {'article_form': article_form}
         return render(request, 'article/create.html', context)
-    article_form = ArticlePostForm(data=request.POST, instance=article_obj)
+    article_form = ArticlePostForm(data=request.POST, instance=article_obj, files=request.FILES)
+    print('在修改博客的视图函数里查看上传文件', request.FILES)
     if article_form.is_valid():
         new_article_obj = article_form.save(commit=False)
         new_article_obj.author = User.objects.get(pk=request.user.id)
         new_article_obj.save()
+        article_form.save_m2m()
         # return redirect(reverse('article:article_edit', kwargs={'pid': pid}))
         return redirect('article:article_detail', pid=pid)
     else:
@@ -117,3 +123,4 @@ def article_delete(request, pid):
     print('执行了吗')
     # 完成删除后返回文章列表
     return redirect("article:list")
+

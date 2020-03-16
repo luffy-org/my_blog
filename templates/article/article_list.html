@@ -34,43 +34,77 @@
         {% if search %}
             {% if articles %}
                 <h4>
-                <span style="color: red">{{ search }} </span>
-                的搜索结果如下：
+                    <span style="color: red">{{ search }} </span>
+                    的搜索结果如下：
                     <hr>
                 </h4>
-                {% else %}
+            {% else %}
                 <h4>暂无
                 <span style="color: red">{{ search }} </span>
                 相关信息
-                    <hr>
+                <hr>
             {% endif %}
 
-        
+
         {% endif %}
         <div class="row mt-2">
 
             {% for article in articles %}
-                <!-- 文章内容 -->
-                <div class="col-4 mb-4">
-                    <!-- 卡片容器 -->
-                    <div class="card h-100">
-                        <!-- 标题 -->
-                        <h4 class="card-header">{{ article.title }}</h4>
-                        <!-- 摘要 -->
-                        <div class="card-body">
-                            <p class="card-text">{{ article.body|slice:'30' }}...</p>
-                        </div>
-                        <!-- 注脚 -->
-                        <div class="card-footer">
-                            <a href="{% url 'article:article_detail' article.id %}" class="btn btn-primary">阅读本文</a>
-                            <span>
-                                <small class="col align-self-end" style="color: gray;">
-                                    浏览：{{ article.total_views }}
-                                </small>
-                            </span>
-                        </div>
+                <!-- 展示博客封面 -->
+                {% if article.avatar %}
+                    <div class="col-3">
+                        <img src="{{ article.avatar.url }}" alt=""  style="max-width:100%; border-radius: 20px">
                     </div>
+                {% endif %}
+                <!-- 文章内容 -->
+                <div class="col">
+                    <!-- 栏目 -->
+                    {% if article.column %}
+                        <a href="{% url 'article:list' %}?column={{ article.column.id }}">
+                        <button type="button"
+                                class="btn btn-sm mb-2
+                                {% if article.column.title == 'Django' %}
+                                btn-success
+                                {% elif article.column.title == 'Java' %}
+                                btn-danger
+                                {% elif article.column.title == 'HTML' %}
+                                btn-warning
+                                {% else %}
+                                btn-info
+                                {% endif %}">
+                            {{ article.column }}
+                        </button>
+                        </a>
+                    {% endif %}
+                <span>
+                    {% for tag in article.tag.all %}
+                        <a href="{% url 'article:list' %}?tag={{ tag }}" class="badge badge-secondary">
+                        {{ tag }}
+                        </a>
+                    
+                    {% endfor %}
+                    
+                </span>
+                    {#                    <div class=" card h-100">#}
+                    <h4>
+                        <b>
+                            <a href="{% url 'article:article_detail' article.id %}"
+                               style="color: black;">{{ article.title }}</a>
+                        </b>
+                    </h4>
+
+                    <div>
+                        <p style="color: gray;">{{ article.body|slice:'30' }}...</p>
+                    </div>
+
+                    <p>
+                        <span style="color: green;">{{ article.total_views }} 浏览&nbsp;&nbsp;&nbsp;</span>
+                        <span style="color: blue;">{{ article.created|date:'Y-m-d' }} 发布&nbsp;&nbsp;&nbsp;</span>
+                        <span style="color: darkred;">{{ article.updated|date:'Y-m-d' }} 更新&nbsp;&nbsp;&nbsp;</span>
+                    </p>
+
                 </div>
+                <hr style="width: 100%;">
             {% endfor %}
 
         </div>

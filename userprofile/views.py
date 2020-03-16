@@ -5,7 +5,6 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from userprofile.forms import UserLoginForm, UserRegisterForm, ProfileModelForm
 
-
 # Create your views here.
 from userprofile.models import Profile
 
@@ -37,6 +36,7 @@ def user_logout(request):
     logout(request)
     return redirect('article:list')
 
+
 def user_register(request):
     if request.method == 'POST':
         user_register_form = UserRegisterForm(data=request.POST)
@@ -64,7 +64,7 @@ def user_delete(request, id):
         user = User.objects.get(id=id)
         # 验证登录用户、待删除用户是否相同
         if request.user == user:
-            #退出登录，删除数据并返回博客列表
+            # 退出登录，删除数据并返回博客列表
             logout(request)
             user.delete()
             return redirect("article:list")
@@ -84,13 +84,13 @@ def profile_edit(request):
     user = User.objects.get(id=request.user.id)
     profile_obj = Profile.objects.get(user_id=request.user.id)
     if request.method == 'POST':
-        profile_form = ProfileModelForm(data=request.POST, instance=profile_obj,files=request.FILES)
+        print('头像中的图片', request.FILES)
+        profile_form = ProfileModelForm(data=request.POST, instance=profile_obj, files=request.FILES)
         if profile_form.is_valid():
             profile_form.save()
             return redirect('article:list')
 
     else:
         profile_form = ProfileModelForm(instance=profile_obj)
-        context = {'profile_form': profile_form, 'profile': profile_obj, 'user': user }
+        context = {'profile_form': profile_form, 'profile': profile_obj, 'user': user}
         return render(request, 'userprofile/edit.html', context)
-

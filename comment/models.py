@@ -4,6 +4,7 @@ from django.db import models
 # Create your models here.
 from article.models import ArticlePost
 
+__all__ = ['Comment']
 
 class Comment(models.Model):
     """

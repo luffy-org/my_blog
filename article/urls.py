@@ -10,5 +10,5 @@ urlpatterns = [
     path('create/', views.article_create, name='article_create'),
     path('article-delete/<int:pid>/', views.article_delete, name='article_delete'),
     # path('article_edit/<int:pid>/', views.article_edit, name='article_edit')
-    re_path(r'^article_edit/(?P<pid>\d+)/$', views.article_edit, name='article_edit')
+    re_path(r'^article_edit/(?P<pid>\d+)/$', views.article_edit, name='article_edit'),
 ]
