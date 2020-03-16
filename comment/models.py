@@ -1,3 +1,4 @@
+from ckeditor.fields import RichTextField
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -12,7 +13,8 @@ class Comment(models.Model):
     """
     article = models.ForeignKey(to=ArticlePost, blank=True, null=True, verbose_name='评论属于哪篇博客', on_delete=models.CASCADE)
     user = models.ForeignKey(to=User, blank=True, null=True, verbose_name='该评论是谁写的', on_delete=models.CASCADE)
-    body = models.TextField(verbose_name='评论内容')
+    # body = models.TextField(verbose_name='评论内容')
+    body = RichTextField(verbose_name='评论内容')  # 评论内容使用富文本插件的字段
     created = models.DateTimeField(auto_now_add=True, verbose_name='评论时间')
 
     class Meta:

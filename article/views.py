@@ -12,6 +12,7 @@ from article.forms import ArticlePostForm
 from article.models import ArticlePost, ArticleColumn
 import markdown
 
+from comment.forms import CommentForm
 from comment.models import Comment
 
 
@@ -61,11 +62,12 @@ def article_detail(request, pid):
     article.body = md.convert(article.body)
     author = article.author
     comments = Comment.objects.filter(article_id=pid)
+    comment_form = CommentForm()
     if request.user != author:
         article.total_views += 1
         article.save(update_fields=['total_views'])
     # 需要传递给模板的对象
-    context = {'article': article, 'toc': md.toc, 'comments': comments}
+    context = {'article': article, 'toc': md.toc, 'comments': comments, 'comment_form': comment_form}
     # 载入模板，并返回context对象
     return render(request, 'article/detail.html', context)
 
