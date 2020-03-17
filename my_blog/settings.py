@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     'taggit',
     'comment.apps.CommentConfig',
     'ckeditor',
-    'mptt'
+    'mptt',
+    'notifications',
+    'notice.apps.NoticeConfig'
 
 ]
 
