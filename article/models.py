@@ -61,7 +61,18 @@ class ArticlePost(models.Model):
         return self.title
 
     def get_absolute_url(self):
+        """
+        redirct方法中传入模型会触发该模型的此方法
+        :return:
+        """
         return reverse('article:article_detail', args=[self.id])
+
+    def was_created_recently(self):
+        diff = timezone.now() - self.created
+        if diff.days <= 0 and diff.seconds < 60:
+            return True
+        else:
+            return False
 
 
 class ArticleColumn(models.Model):

@@ -19,14 +19,18 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 
+from article.views import article_list
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', article_list, name='home'),
     path('article/', include('article.urls', namespace='article')),
     path('userprofile/', include('userprofile.urls', namespace='userprofile')),
     path('password-reset/', include('password_reset.urls')),
     path('comment/', include('comment.urls')),
     path('inbox/notifications/', include(notifications.urls, namespace='notifications')),
-    path('notice/', include('notice.urls', namespace='notice'))
+    path('notice/', include('notice.urls', namespace='notice')),
+    path('accounts/', include('allauth.urls'))
 
 ]
 

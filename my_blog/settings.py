@@ -28,6 +28,7 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -43,7 +44,18 @@ INSTALLED_APPS = [
     'ckeditor',
     'mptt',
     'notifications',
-    'notice.apps.NoticeConfig'
+    'notice.apps.NoticeConfig',
+
+    # allauth 启动必须项
+    'django.contrib.sites',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+
+    # 可添加需要的第三方登录
+    'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.weibo',
 
 ]
 
@@ -55,6 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'my_blog.urls'
@@ -145,7 +158,6 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
-
 # 富文本编辑器的设置
 CKEDITOR_CONFIGS = {
     # django-ckeditor默认使用default配置
@@ -176,3 +188,13 @@ CKEDITOR_CONFIGS = {
         'extraPlugins': ','.join(['codesnippet']),
     }
 }
+
+# django-allauth配置
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend', 'allauth.account.auth_backends.AuthenticationBackend')
+# 设置站点
+SITE_ID = 1
+# 登录成功后重定向地址
+# LOGIN_REDIRECT_URL = '/article/list'
+LOGIN_REDIRECT_URL = '/'

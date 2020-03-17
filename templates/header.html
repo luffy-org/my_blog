@@ -17,7 +17,6 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'article:list' %}">文章</a>
                 </li>
-            {{ unread_count }}
                 {% if user.is_authenticated %}
                     <!-- 如果用户已经登录，则显示用户名下拉框 -->
                     <li class="nav-item dropdown">
